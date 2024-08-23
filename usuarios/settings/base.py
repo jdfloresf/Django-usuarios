@@ -9,8 +9,11 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
+import json
 
+from django.core.exceptions import ImproperlyConfigured
 from pathlib import Path
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -20,7 +23,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-0a7!h4=s8#v4b5*ydr3(7o$mnz%#c$%(-j02wn7_nn7o$qn7n2'
+with open('secret.json') as file:
+    secret = json.loads(file.read())
+
+def get_secret(secret_name, secrets=secret):
+    try:
+        return secrets[secret_name]
+    except:
+        msg = "No se pudo cargar la variable"
+        raise ImproperlyConfigured(msg)
+
+SECRET_KEY = get_secret('SECRET_KEY')
 
 
 # Application definition
